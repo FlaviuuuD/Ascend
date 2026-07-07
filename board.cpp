@@ -1,19 +1,76 @@
 #include "board.h"
+#include "move.h"
+#include "tools.h"
 #include <iostream>
-using namespace std;
 void board::readFromInput()
 {
-    int token;
+    char token;
     for(int i = 1; i <= 7; i++)
     {
         for(int j = 1; j <= 7; j++)
         {
-            cin >> token;
-            mask |= ((1 << ((i - 1) * 7 + j)) & token);
+            std::cin >> token;
+            if(token == '0') {} //neocupat, nu facem nimic.
+            else
+            {
+                //pozitia este ocupata.
+                mask[0] |= (1ll << ((i - 1) * 7 + j));
+                mask[1] |= ((1ll << ((i - 1) * 7 + j)) & (token == '1'));
+                //presupunem ca 1 = este al nostru tokenul, 2 = este al adversarului.
+            }
         }
     }
+    //noi suntem automat la mutare din moment ce am citit tabla de la intrare.
+    mask[0] |= (1ll << 50);
 }
-int board::getBoard()
+inline char board::getMovingPlayer()
 {
-    return mask;
+    //returnam 1 daca mutam noi, 0 daca inamicul.
+    return ((mask[0] >> 50) & 1);
+}
+inline char board::checkValidMove(move& mv)
+{
+    return (mv.tokenPosition >= 1 && mv.tokenPosition <= 49 && (mask[0] & (1ll << (mv.tokenPosition))) && (mask[1] & (1ll << mv.tokenPosition)) == mv.player &&
+            mv.destination >= 1 && mv.destination <= 49 && !(mask[0] & (1ll << mv.destination)) && 
+            ((mv.moveType == 0 && toolsDISTANCE(mv.tokenPosition, mv.destination) == 1) || (mv.moveType == 1 && toolsDISTANCE(mv.tokenPosition, mv.destination) == 2)));
+}
+void board::applyMove(move& mv)
+{
+    if(mv.moveType == 0)
+    {
+        //clonare.
+        if(mv.player == 1)
+        {
+            mask[0] |= (1ll << mv.destination);
+            mask[1] |= (1ll << mv.destination);
+        }
+        else
+        {
+            mask[0] |= (1ll << mv.destination);
+            //la destinatie oricum nu era niciun jeton deci by default la destinatie in mask[1] vom avea 0, dar ne vom asigura totusi.
+            if(mask[1] & (1ll << mv.destination))
+                mask[1] ^= (1ll << mv.destination);
+        }
+    }
+    else
+    {
+        //salt.
+        mask[0] ^= (1ll << mv.tokenPosition);
+        mask[0] |= (1ll << mv.destination);
+        if(mv.player == 1)
+            mask[1] |= (1ll << mv.destination);
+        else
+        {
+            if(mask[1] & (1ll << mv.destination))
+                mask[1] ^= (1ll << mv.destination);
+        }
+    }
+    char lin = (mv.destination / 7 - (mv.destination % 7 == 0) + 1);
+    char col = (mv.destination % 7 == 0 ? 7 : mv.destination % 7);
+    for(int k = 0; k < 4; k++)
+    {
+        if(lin + toolsDX[k] >= 1 && lin + toolsDX[k] <= 7 && col + toolsDY[k] >= 1 && toolsDY[k] <= 7 && 
+            (mask[0] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) && (mask[1] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) != mv.player)
+                {mask[1] ^= (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])));}
+    }
 }
