@@ -11,4 +11,4 @@ struct TTEntry{
 TTEntry TT[TTSize];
 TTEntry getTTEntry();
 bool doesEntryExist(int key0, int key1);
-TTEntry addTTEntry();
+void addTTEntry();
