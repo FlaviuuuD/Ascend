@@ -1,3 +1,4 @@
+#pragma once
 #include "move.h"
 class board{
     unsigned long long mask[2];

@@ -1,3 +1,5 @@
+#pragma once
+#include <iostream>
 char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 inline int toolsDISTANCE(char& x, char& y)

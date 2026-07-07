@@ -1,3 +1,4 @@
+#pragma once
 struct move{
     char moveType; //0 = clonare, 1 = salt.
     char tokenPosition; //pozitia tokenului ce va fi mutat / clonat (de la 1 la 49)
