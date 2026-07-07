@@ -2,6 +2,30 @@
 #include "move.h"
 #include "tools.h"
 #include <iostream>
+void board::initializeKeys()
+{
+    for(int i = 1; i <= 49; i++)
+    {
+        if(!(mask[0] & (1ll << i)))
+        {
+            key[0] ^= randomValues[0][i][0];
+            key[1] ^= randomValues[1][i][0];
+        }
+        else
+        {
+            if((mask[1] & (1ll << i)))
+            {
+                key[0] ^= randomValues[0][i][1];
+                key[1] ^= randomValues[1][i][1];
+            }
+            else
+            {
+                key[0] ^= randomValues[0][i][2];
+                key[1] ^= randomValues[1][i][2];
+            }
+        }
+    }
+}
 void board::readFromInput()
 {
     char token;
@@ -22,6 +46,7 @@ void board::readFromInput()
     }
     //noi suntem automat la mutare din moment ce am citit tabla de la intrare.
     mask[0] |= (1ll << 50);
+    initializeKeys();
 }
 inline char board::getMovingPlayer()
 {
@@ -43,10 +68,14 @@ void board::applyMove(move& mv)
         {
             mask[0] |= (1ll << mv.destination);
             mask[1] |= (1ll << mv.destination);
+            key[0] ^= randomValues[0][mv.destination][1];
+            key[1] ^= randomValues[1][mv.destination][1];
         }
         else
         {
             mask[0] |= (1ll << mv.destination);
+            key[0] ^= randomValues[0][mv.destination][2];
+            key[1] ^= randomValues[1][mv.destination][2];
             //la destinatie oricum nu era niciun jeton deci by default la destinatie in mask[1] vom avea 0, dar ne vom asigura totusi.
             if(mask[1] & (1ll << mv.destination))
                 mask[1] ^= (1ll << mv.destination);
@@ -56,11 +85,19 @@ void board::applyMove(move& mv)
     {
         //salt.
         mask[0] ^= (1ll << mv.tokenPosition);
+        key[0] ^= randomValues[0][mv.tokenPosition][mv.player];
+        key[1] ^= randomValues[1][mv.tokenPosition][mv.player];
         mask[0] |= (1ll << mv.destination);
         if(mv.player == 1)
+        {
             mask[1] |= (1ll << mv.destination);
+            key[0] ^= randomValues[0][mv.destination][1];
+            key[1] ^= randomValues[1][mv.destination][1];
+        }
         else
         {
+            key[0] ^= randomValues[0][mv.destination][2];
+            key[1] ^= randomValues[1][mv.destination][2];
             if(mask[1] & (1ll << mv.destination))
                 mask[1] ^= (1ll << mv.destination);
         }

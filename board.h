@@ -7,6 +7,8 @@ class board{
     //(informatie corecta doar daca in mask[0] pozitia este marcata ca fiind ocupata). 1 = suntem noi, 0 = este adversarul.
     //De asemenea, in prima masca, pe pozitia 50, ne vom tine ce jucator este la mutare (1 = suntem noi, 0 = este adversarul).
 public:
+    unsigned long long key[2];
+    void initializeKeys();
     void readFromInput();
     char getMovingPlayer();
     char checkValidMove(move& mv);

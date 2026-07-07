@@ -1,9 +1,11 @@
 #pragma once
 #include <iostream>
-char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
-char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-inline int toolsDISTANCE(char& x, char& y)
-{
-    //distanta este egala cu maximul dintre distanta pe linie si distanta pe coloana.
-    return std::max(abs((x / 7 - (x % 7 == 0) + 1) - (y / 7 - (y % 7 == 0) + 1)), abs((x % 7 == 0 ? 7 : (x % 7)) - (y % 7 == 0 ? 7 : (y % 7))));
-}
+#include <chrono>
+unsigned long long randomValues[2][50][3];
+const char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+const char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+inline int toolsDISTANCE(char& x, char& y);
+void getRandomValues();
+void getInitialTime();
+double getTimeInSeconds();
+bool stillHaveTime();
