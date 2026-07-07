@@ -1,5 +1,6 @@
 #include "transpositionTable.h"
 #include "board.h"
+TTEntry TT[TTSize];
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
 {
     TT[brd.key[0] & (TTSize - 1)].key[0] = brd.key[0];
