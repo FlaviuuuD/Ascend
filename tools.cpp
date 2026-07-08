@@ -6,6 +6,9 @@ double remainingTime;
 const double TIME_LIMIT = 1.78;
 const char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 const char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+unsigned long long adjiacentMask[50];
+unsigned long long adjiacentJumpMask[50];
+unsigned long long captureMask[50];
 const char toolsJumpDX[] = {-2, -2, -2, -2, -2, -1, -1, 0, 0, 1, 1, 2, 2, 2, 2, 2};
 const char toolsJumpDY[] = {-2, -1, 0, 1, 2, -2, 2, -2, 2, -2, 2, -2, -1, 0, 1, 2};
 char adjiacentMatrix[50][8];
@@ -47,7 +50,7 @@ void precalculateTools()
         {
             newx = xi + toolsDX[j]; newy = yi + toolsDY[j];
             if(newx >= 1 && newx <= 7 && newy >= 1 && newy <= 7)
-                adjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
+                {adjiacentMatrix[i][j] = ((newx - 1) * 7 + newy); adjiacentMask[i] |= (1ll << ((newx - 1) * 7 + newy));}
         }
     }
     for(int i = 1; i <= 49; i++)
@@ -57,8 +60,14 @@ void precalculateTools()
         {
             newx = xi + toolsJumpDX[j]; newy = yi + toolsJumpDY[j];
             if(newx >= 1 && newx <= 7 && newy >= 1 && newy <= 7)
-                jumpAdjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
+                {jumpAdjiacentMatrix[i][j] = ((newx - 1) * 7 + newy); adjiacentJumpMask[i] |= (1ll << ((newx - 1) * 7 + newy));}
         }
+    }
+    for(int i = 1; i <= 49; i++)
+    {
+        for(int j = 1; j <= 49; j++)
+            if(((1ll << j) & adjiacentMask[i]) || ((1ll << j) & adjiacentJumpMask[i]))
+                captureMask[i] |= adjiacentMask[j];
     }
 }
 bool stillHaveHardTime()
