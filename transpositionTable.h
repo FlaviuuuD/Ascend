@@ -11,4 +11,4 @@ struct TTEntry{
 };
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp);
 bool doesEntryExist(unsigned long long& key0, unsigned long long& key1);
-TTEntry getTTEntry(int key0);
+TTEntry getTTEntry(unsigned long long& key0);

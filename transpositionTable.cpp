@@ -5,7 +5,7 @@
 TTEntry TT[TTSize];
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
 {
-    if(doesEntryExist(brd.key[0], brd.key[1]) && TT[brd.key[0] & (TTSize - 1)].depth >= stateDepth)
+    if(doesEntryExist(brd.key[0], brd.key[1]) || TT[brd.key[0] & (TTSize - 1)].depth >= stateDepth)
         return;
     TT[brd.key[0] & (TTSize - 1)].key[0] = brd.key[0];
     TT[brd.key[0] & (TTSize - 1)].key[1] = brd.key[1];
@@ -16,9 +16,9 @@ void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth,
 }
 bool doesEntryExist(unsigned long long& key0, unsigned long long& key1)
 {
-    return (TT[key0 & (TTSize - 1)].key[1] == key1);    
+    return (TT[key0 & (TTSize - 1)].key[0] == key0 && TT[key0 & (TTSize - 1)].key[1] == key1);    
 }
-TTEntry getTTEntry(int key0)
+TTEntry getTTEntry(unsigned long long& key0)
 {
     return TT[key0 & (TTSize - 1)];
 }

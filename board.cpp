@@ -68,17 +68,13 @@ char board::getMovingPlayer()
     //returnam 1 daca mutam noi, 0 daca inamicul.
     return ((mask[0] >> 50) & 1);
 }
-inline char board::checkValidMove(move& mv)
-{
-    return (mv.tokenPosition >= 1 && mv.tokenPosition <= 49 && (mask[0] & (1ll << (mv.tokenPosition))) && (mask[1] & (1ll << mv.tokenPosition)) == mv.player &&
-            mv.destination >= 1 && mv.destination <= 49 && !(mask[0] & (1ll << mv.destination)) && 
-            ((mv.moveType == 0 && toolsDISTANCE(mv.tokenPosition, mv.destination) == 1) || (mv.moveType == 1 && toolsDISTANCE(mv.tokenPosition, mv.destination) == 2)));
-}
 void board::applyMove(move& mv)
 {
     if(mv.moveType == 0)
     {
         //clonare.
+        key[0] ^= randomValues[0][mv.destination][0];
+        key[1] ^= randomValues[1][mv.destination][0];
         if(mv.player == 1)
         {
             mask[0] |= (1ll << mv.destination);
@@ -101,8 +97,12 @@ void board::applyMove(move& mv)
     {
         //salt.
         mask[0] ^= (1ll << mv.tokenPosition);
-        key[0] ^= randomValues[0][mv.tokenPosition][mv.player];
-        key[1] ^= randomValues[1][mv.tokenPosition][mv.player];
+        key[0] ^= randomValues[0][mv.tokenPosition][(1 - mv.player) + 1];
+        key[1] ^= randomValues[1][mv.tokenPosition][(1 - mv.player) + 1];
+        key[0] ^= randomValues[0][mv.tokenPosition][0];
+        key[1] ^= randomValues[1][mv.tokenPosition][0];
+        key[0] ^= randomValues[0][mv.destination][0];
+        key[1] ^= randomValues[1][mv.destination][0];
         mask[0] |= (1ll << mv.destination);
         if(mv.player == 1)
         {
@@ -124,7 +124,15 @@ void board::applyMove(move& mv)
     {
         if(adjiacentMatrix[mv.destination][k] >= 1 && adjiacentMatrix[mv.destination][k] <= 49 && 
             (mask[0] & (1ll << adjiacentMatrix[mv.destination][k])) && (((mask[1] & (1ll << adjiacentMatrix[mv.destination][k])) != 0) != mv.player))
-                {mask[1] ^= (1ll << adjiacentMatrix[mv.destination][k]); numberOfTokens[mv.player]++; numberOfTokens[mv.player ^ 1]--;}
+                {
+                    mask[1] ^= (1ll << adjiacentMatrix[mv.destination][k]); 
+                    numberOfTokens[mv.player]++; 
+                    numberOfTokens[mv.player ^ 1]--;
+                    key[0] ^= randomValues[0][adjiacentMatrix[mv.destination][k]][mv.player + 1];
+                    key[1] ^= randomValues[1][adjiacentMatrix[mv.destination][k]][mv.player + 1];
+                    key[0] ^= randomValues[0][adjiacentMatrix[mv.destination][k]][(1 - mv.player) + 1];
+                    key[1] ^= randomValues[1][adjiacentMatrix[mv.destination][k]][(1 - mv.player) + 1];
+                }
     }
     //schimbam si jucatorul la mutare.
     key[0] ^= randomValues[0][50][0];
