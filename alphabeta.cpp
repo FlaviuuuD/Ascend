@@ -62,7 +62,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         for(int ind = 0; ind < (int) (generatedMoves.size()); ind++)
         {
             state.applyMove(generatedMoves[ind]);
-            auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
+            auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
             state = original;
             if(!stillHaveTime())
                 {outOfTime = 1; return -INF;}

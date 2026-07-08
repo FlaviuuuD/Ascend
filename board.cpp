@@ -51,7 +51,6 @@ void board::readFromInput()
                 mask[0] |= (1ll << ((i - 1) * 7 + j));
                 if((token == 'x' && player == 0) || (token == 'o' && player == 1))
                     mask[1] |= (1ll << ((i - 1) * 7 + j));
-                //presupunem ca 1 = este al nostru tokenul, 2 = este al adversarului.
             }
         }
     }
@@ -132,6 +131,7 @@ void board::applyMove(move& mv)
     key[0] ^= randomValues[0][50][1];
     key[1] ^= randomValues[1][50][0];
     key[1] ^= randomValues[1][50][1];
+    mask[0] ^= (1ll << 50);
 }
 bool board::isTerminal()
 {
