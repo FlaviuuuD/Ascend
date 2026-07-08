@@ -6,8 +6,11 @@
 #include "transpositionTable.h"
 #include "moveGenerator.h"
 #include <vector>
+bool outOfTime = 0;
 int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlayer)
 {
+    if(!stillHaveTime())
+        {outOfTime = 1; return -INF;}
     if(doesEntryExist(state.key[0], state.key[1]))
     {
         TTEntry auxEntry = getTTEntry(state.key[0]);
@@ -24,6 +27,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
     if(depth == 0 || state.isTerminal())
         return evaluate(state);
     std::vector<move> generatedMoves = generateMoves(state);
+    if(!stillHaveTime())
+        {outOfTime = 1; return -INF;}
     if(generatedMoves.empty())
         return evaluate(state);
     int value;
@@ -38,6 +43,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         {
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
+            if(!stillHaveTime())
+                {outOfTime = 1; return -INF;}
             if(auxVariable > value)
             {
                 value = auxVariable;
@@ -56,6 +63,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         {
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
+            if(!stillHaveTime())
+                {outOfTime = 1; return -INF;}
             if(auxVariable < value)
             {
                 value = auxVariable;
@@ -67,6 +76,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             beta = std::min(beta, value);
         }
     }
+    if(!stillHaveTime())
+        {outOfTime = 1; return -INF;}
     addTTEntry(state, generatedMoves[positionOfBestFoundMove], value, depth, TTEntryType);
     return value;
 }
@@ -74,7 +85,7 @@ move getMove(board& state)
 {
     //folosim Iterative Deepening.
     int depth = 1;
-    while(stillHaveTime())
+    while(stillHaveTime() && !outOfTime)
     {
         ++depth;
         alphaBeta(state, depth, -INF, +INF, 1);

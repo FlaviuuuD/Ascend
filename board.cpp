@@ -38,6 +38,7 @@ void board::readFromInput()
 {
     char token;
     char player; std::cin >> player;
+    player -= '0';
     for(int i = 1; i <= 7; i++)
     {
         for(int j = 1; j <= 7; j++)
@@ -48,7 +49,7 @@ void board::readFromInput()
             {
                 //pozitia este ocupata.
                 mask[0] |= (1ll << ((i - 1) * 7 + j));
-                if((token == 'x' && player == '0') || (token == 'o' && player == '1'))
+                if((token == 'x' && player == 0) || (token == 'o' && player == 1))
                     mask[1] |= (1ll << ((i - 1) * 7 + j));
                 //presupunem ca 1 = este al nostru tokenul, 2 = este al adversarului.
             }
@@ -58,7 +59,8 @@ void board::readFromInput()
     mask[0] |= (1ll << 50);
     int milisec[2];
     std::cin >> milisec[0]>> milisec[1];
-    remainingTime = milisec[player];
+    remainingTime = (milisec[player] / 100.0);
+    remainingTime = std::min(remainingTime, TIME_LIMIT);
     initializeKeys();
 }
 char board::getMovingPlayer()
