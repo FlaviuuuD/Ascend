@@ -8,9 +8,12 @@ class board{
     //De asemenea, in prima masca, pe pozitia 50, ne vom tine ce jucator este la mutare (1 = suntem noi, 0 = este adversarul).
 public:
     unsigned long long key[2];
-    void initializeKeys();
+    char numberOfTokens[2];
     void readFromInput();
+    void initializeKeys();
+    void initializeNumberOfTokens();
     char getMovingPlayer();
     char checkValidMove(move& mv);
     void applyMove(move& mv);
+    bool isTerminal();
 };

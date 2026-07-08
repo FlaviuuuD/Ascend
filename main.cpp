@@ -11,7 +11,7 @@ int main()
     getInitialTime();
     getRandomValues();
     gameState.readFromInput();
-    move myMove = getMove(gameState);
-    myMove.print();
+    /*myMove = getMove(gameState);
+    myMove.print();*/
     return 0;
 }

@@ -28,6 +28,12 @@ void board::initializeKeys()
     key[0] ^= randomValues[0][50][1];
     key[1] ^= randomValues[1][50][1];
 }
+void board::initializeNumberOfTokens()
+{
+    for(int i = 1; i <= 49; i++)
+        if(mask[0] & (1ll << i))
+            numberOfTokens[(mask[1] & (1ll << i)) != 0]++;
+}
 void board::readFromInput()
 {
     char token;
@@ -87,6 +93,7 @@ void board::applyMove(move& mv)
             if(mask[1] & (1ll << mv.destination))
                 mask[1] ^= (1ll << mv.destination);
         }
+        numberOfTokens[mv.player]++;
     }
     else
     {
@@ -115,11 +122,15 @@ void board::applyMove(move& mv)
     {
         if(lin + toolsDX[k] >= 1 && lin + toolsDX[k] <= 7 && col + toolsDY[k] >= 1 && toolsDY[k] <= 7 && 
             (mask[0] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) && (mask[1] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) != mv.player)
-                {mask[1] ^= (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])));}
+                {mask[1] ^= (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k]))); numberOfTokens[mv.player]++; numberOfTokens[mv.player ^ 1]--;}
     }
     //schimbam si jucatorul la mutare.
     key[0] ^= randomValues[0][50][0];
     key[0] ^= randomValues[0][50][1];
     key[1] ^= randomValues[1][50][0];
     key[1] ^= randomValues[1][50][1];
+}
+bool board::isTerminal()
+{
+    return ((numberOfTokens[0] + numberOfTokens[1] == 49) || (numberOfTokens[0] == 0) || (numberOfTokens[1] == 0));
 }

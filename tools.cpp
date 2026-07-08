@@ -2,10 +2,10 @@
 #include <random>
 #include "tools.h"
 unsigned long long randomValues[2][51][3];
-int remainingTime;
+double remainingTime;
+const double TIME_LIMIT = 1.78;
 const char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 const char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-const double TIME_LIMIT = 0.98;
 const unsigned long long maxULL = (((__int128_t)(1) << (64)) - 1);
 int toolsDISTANCE(char& x, char& y)
 {
@@ -23,7 +23,7 @@ double getTimeInSeconds()
 }
 bool stillHaveTime()
 {
-    return (getTimeInSeconds() < TIME_LIMIT);
+    return (getTimeInSeconds() < remainingTime);
 }
 void getRandomValues()
 {
