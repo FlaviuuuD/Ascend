@@ -59,7 +59,8 @@ void board::readFromInput()
     int milisec[2];
     std::cin >> milisec[0]>> milisec[1];
     remainingTime = (milisec[player] / 100.0);
-    remainingTime = std::min(remainingTime, TIME_LIMIT);
+    originalRemainingTime = 0.5 * remainingTime;
+    remainingTime = std::min(0.5 * remainingTime, TIME_LIMIT);
     initializeNumberOfTokens();
     initializeKeys();
 }

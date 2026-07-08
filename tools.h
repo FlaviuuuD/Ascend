@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <chrono>
+extern double originalRemainingTime;
 extern unsigned long long randomValues[2][51][3];
 extern double remainingTime;
 const int INF = 1e8;
@@ -12,3 +13,4 @@ void precalculateTools();
 void getInitialTime();
 double getTimeInSeconds();
 bool stillHaveTime();
+bool stillHaveHardTime();

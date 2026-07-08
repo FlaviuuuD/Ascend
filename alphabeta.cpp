@@ -11,6 +11,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
 {
     if(!stillHaveTime())
         {outOfTime = 1; return -INF;}
+    move firstMove;
+    bool killerMove = 0;
     if(doesEntryExist(state.key[0], state.key[1]))
     {
         TTEntry auxEntry = getTTEntry(state.key[0]);
@@ -23,10 +25,17 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             if(auxEntry.type == 2 && auxEntry.score >= beta)
                 return auxEntry.score;
         }
+        killerMove = 1;
+        firstMove = auxEntry.bestMove;
     }
     if(depth == 0 || state.isTerminal())
         return evaluate(state);
     std::vector<move> generatedMoves = generateMoves(state);
+    if(killerMove)
+    {
+        generatedMoves.push_back(firstMove);
+        std::swap(generatedMoves.back(), generatedMoves[0]);
+    }
     if(!stillHaveTime())
         {outOfTime = 1; return -INF;}
     if(generatedMoves.empty())
@@ -85,11 +94,14 @@ move getMove(board& state)
 {
     //folosim Iterative Deepening.
     int depth = 0;
-    while(stillHaveTime() && !outOfTime)
+    move lastMove;
+    while((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < 9))
     {
         ++depth;
         alphaBeta(state, depth, -INF, +INF, 1);
+        if(stillHaveTime() && !outOfTime)
+            lastMove = getTTEntry(state.key[0]).bestMove;
     }
     std::cerr << "kibitz" << " " << depth << '\n';
-    return getTTEntry(state.key[0]).bestMove;
+    return lastMove;
 }

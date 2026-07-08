@@ -11,6 +11,7 @@ const char toolsJumpDY[] = {-2, -1, 0, 1, 2, -2, 2, -2, 2, -2, 2, -2, -1, 0, 1, 
 char adjiacentMatrix[50][8];
 char jumpAdjiacentMatrix[50][16];
 const unsigned long long maxULL = (((__int128_t)(1) << (64)) - 1);
+double originalRemainingTime;
 int toolsDISTANCE(char& x, char& y)
 {
     //distanta este egala cu maximul dintre distanta pe linie si distanta pe coloana.
@@ -59,4 +60,8 @@ void precalculateTools()
                 jumpAdjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
         }
     }
+}
+bool stillHaveHardTime()
+{
+    return (getTimeInSeconds() < originalRemainingTime);
 }

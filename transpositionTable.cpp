@@ -5,7 +5,7 @@
 TTEntry TT[TTSize];
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
 {
-    if(doesEntryExist(brd.key[0], brd.key[1]) || TT[brd.key[0] & (TTSize - 1)].depth >= stateDepth)
+    if(doesEntryExist(brd.key[0], brd.key[1]) && TT[brd.key[0] & (TTSize - 1)].depth >= stateDepth)
         return;
     TT[brd.key[0] & (TTSize - 1)].key[0] = brd.key[0];
     TT[brd.key[0] & (TTSize - 1)].key[1] = brd.key[1];
