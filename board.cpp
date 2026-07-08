@@ -61,7 +61,7 @@ void board::readFromInput()
     remainingTime = milisec[player];
     initializeKeys();
 }
-inline char board::getMovingPlayer()
+char board::getMovingPlayer()
 {
     //returnam 1 daca mutam noi, 0 daca inamicul.
     return ((mask[0] >> 50) & 1);
@@ -118,11 +118,11 @@ void board::applyMove(move& mv)
     }
     char lin = (mv.destination / 7 - (mv.destination % 7 == 0) + 1);
     char col = (mv.destination % 7 == 0 ? 7 : mv.destination % 7);
-    for(int k = 0; k < 4; k++)
+    for(int k = 0; k < 8; k++)
     {
-        if(lin + toolsDX[k] >= 1 && lin + toolsDX[k] <= 7 && col + toolsDY[k] >= 1 && toolsDY[k] <= 7 && 
-            (mask[0] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) && (mask[1] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) != mv.player)
-                {mask[1] ^= (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k]))); numberOfTokens[mv.player]++; numberOfTokens[mv.player ^ 1]--;}
+        if(adjiacentMatrix[mv.destination][k] >= 1 && adjiacentMatrix[mv.destination][k] <= 49 && 
+            (mask[0] & (1ll << adjiacentMatrix[mv.destination][k])) && (((mask[1] & (1ll << adjiacentMatrix[mv.destination][k])) != 0) != mv.player))
+                {mask[1] ^= (1ll << adjiacentMatrix[mv.destination][k]); numberOfTokens[mv.player]++; numberOfTokens[mv.player ^ 1]--;}
     }
     //schimbam si jucatorul la mutare.
     key[0] ^= randomValues[0][50][0];

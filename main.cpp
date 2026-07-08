@@ -9,9 +9,9 @@ move myMove;
 int main()
 {
     getInitialTime();
-    getRandomValues();
+    precalculateTools;
     gameState.readFromInput();
-    /*myMove = getMove(gameState);
-    myMove.print();*/
+    myMove = getMove(gameState);
+    myMove.print();
     return 0;
 }
