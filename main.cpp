@@ -4,11 +4,12 @@
 #include "move.h"
 #include "alphabeta.h"
 #include "tools.h"
+board gameState;
+move myMove;
 int main()
 {
     getInitialTime();
     getRandomValues();
-    board gameState;
     gameState.readFromInput();
     move myMove = getMove(gameState);
     myMove.print();

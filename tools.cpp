@@ -1,7 +1,8 @@
 #include <iostream>
 #include <random>
 #include "tools.h"
-unsigned long long randomValues[2][50][3];
+unsigned long long randomValues[2][51][3];
+int remainingTime;
 const char toolsDX[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 const char toolsDY[] = {-1, 0, 1, -1, 1, -1, 0, 1};
 const double TIME_LIMIT = 0.98;
@@ -29,7 +30,7 @@ void getRandomValues()
     std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
     std::uniform_int_distribution<unsigned long long> distrib(1, maxULL);
     for(int t = 0; t <= 1; t++)
-        for(int i = 1; i <= 49; i++)
+        for(int i = 1; i <= 50; i++)
             for(int j = 0; j <= 2; j++)
                 randomValues[t][i][j] = distrib(rnd);
 }

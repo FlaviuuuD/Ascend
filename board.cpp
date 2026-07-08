@@ -25,27 +25,34 @@ void board::initializeKeys()
             }
         }
     }
+    key[0] ^= randomValues[0][50][1];
+    key[1] ^= randomValues[1][50][1];
 }
 void board::readFromInput()
 {
     char token;
+    char player; std::cin >> player;
     for(int i = 1; i <= 7; i++)
     {
         for(int j = 1; j <= 7; j++)
         {
             std::cin >> token;
-            if(token == '0') {} //neocupat, nu facem nimic.
+            if(token == '.') {} //neocupat, nu facem nimic.
             else
             {
                 //pozitia este ocupata.
                 mask[0] |= (1ll << ((i - 1) * 7 + j));
-                mask[1] |= ((1ll << ((i - 1) * 7 + j)) & (token == '1'));
+                if((token == 'x' && player == '0') || (token == 'o' && player == '1'))
+                    mask[1] |= (1ll << ((i - 1) * 7 + j));
                 //presupunem ca 1 = este al nostru tokenul, 2 = este al adversarului.
             }
         }
     }
     //noi suntem automat la mutare din moment ce am citit tabla de la intrare.
     mask[0] |= (1ll << 50);
+    int milisec[2];
+    std::cin >> milisec[0]>> milisec[1];
+    remainingTime = milisec[player];
     initializeKeys();
 }
 inline char board::getMovingPlayer()
@@ -110,4 +117,9 @@ void board::applyMove(move& mv)
             (mask[0] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) && (mask[1] & (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])))) != mv.player)
                 {mask[1] ^= (1ll << (((lin + toolsDX[k]) - 1) * 7 + (col + toolsDY[k])));}
     }
+    //schimbam si jucatorul la mutare.
+    key[0] ^= randomValues[0][50][0];
+    key[0] ^= randomValues[0][50][1];
+    key[1] ^= randomValues[1][50][0];
+    key[1] ^= randomValues[1][50][1];
 }
