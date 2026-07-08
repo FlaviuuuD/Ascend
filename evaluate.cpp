@@ -23,7 +23,7 @@ int evaluate(board& state)
     int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * 100; 
     int tokensInDanger = 0;
     //numarul maxim de tokenuri pe care le poate lua adversarul de la noi in urmatoarea runda maxim.
-    /*for(int i = 1; i <= 49; i++)
+    for(int i = 1; i <= 49; i++)
     {
         sp[0][(i / 7 - (i % 7 == 0) + 1)][(i % 7 == 0 ? 7 : i % 7)] = 0;
         sp[1][(i / 7 - (i % 7 == 0) + 1)][(i % 7 == 0 ? 7 : i % 7)] = 0;
@@ -40,6 +40,6 @@ int evaluate(board& state)
     int positioning = 0;
     for(int i = 1; i <= 49; i++)
         if(state.mask[0] & (1ll << i))
-            positioning += (std::min({(i / 7 - (i % 7 == 0) + 1) - 1, 7 - (i / 7 - (i % 7 == 0) + 1), (i % 7 == 0 ? 7 : i % 7) - 1, 7 - (i % 7 == 0 ? 7 : i % 7)})) * 15;*/
+            positioning += (std::min({(i / 7 - (i % 7 == 0) + 1) - 1, 7 - (i / 7 - (i % 7 == 0) + 1), (i % 7 == 0 ? 7 : i % 7) - 1, 7 - (i % 7 == 0 ? 7 : i % 7)})) * 15;
     return (tokenDifference + tokensInDanger);
 }

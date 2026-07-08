@@ -7,9 +7,10 @@
 #include "moveGenerator.h"
 #include <vector>
 bool outOfTime = 0;
+const int depthLimit = 7;
 int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlayer)
 {
-    if(!stillHaveTime())
+    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
         {outOfTime = 1; return -INF;}
     move firstMove;
     bool killerMove = 0;
@@ -36,7 +37,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         generatedMoves.push_back(firstMove);
         std::swap(generatedMoves.back(), generatedMoves[0]);
     }
-    if(!stillHaveTime())
+    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
         {outOfTime = 1; return -INF;}
     if(generatedMoves.empty())
         return evaluate(state);
@@ -53,7 +54,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
             state = original;
-            if(!stillHaveTime())
+            if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
                 {outOfTime = 1; return -INF;}
             if(auxVariable > value)
             {
@@ -73,7 +74,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
             state = original;
-            if(!stillHaveTime())
+            if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
                 {outOfTime = 1; return -INF;}
             if(auxVariable < value)
             {
@@ -85,7 +86,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             beta = std::min(beta, value);
         }
     }
-    if(!stillHaveTime())
+    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
         {outOfTime = 1; return -INF;}
     addTTEntry(state, generatedMoves[positionOfBestFoundMove], value, depth, TTEntryType);
     return value;
@@ -95,7 +96,7 @@ move getMove(board& state)
     //folosim Iterative Deepening.
     int depth = 0;
     move lastMove;
-    while((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < 9))
+    while((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit))
     {
         ++depth;
         alphaBeta(state, depth, -INF, +INF, 1);
