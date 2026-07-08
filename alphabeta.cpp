@@ -90,5 +90,6 @@ move getMove(board& state)
         ++depth;
         alphaBeta(state, depth, -INF, +INF, 1);
     }
+    std::cerr << "kibitz" << " " << depth << '\n';
     return getTTEntry(state.key[0]).bestMove;
 }

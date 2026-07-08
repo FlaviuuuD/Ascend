@@ -10,10 +10,10 @@ std::vector<move> generateMoves(board& state)
     for(int i = 1; i <= 49; i++)
     {
         if((state.mask[0] & (1ll << i)) && (((state.mask[1] & (1ll << i)) != 0) == state.getMovingPlayer()))
-        for(int k = 0; k < 8; k++)
-            if((adjiacentMatrix[i][k] >= 1 && adjiacentMatrix[i][k] <= 49) && !(state.mask[0] & (1ll << adjiacentMatrix[i][k])))
-                cloneMask |= (1ll << adjiacentMatrix[i][k]);
-    }
+            for(int k = 0; k < 8; k++)
+                if((adjiacentMatrix[i][k] >= 1 && adjiacentMatrix[i][k] <= 49) && !(state.mask[0] & (1ll << adjiacentMatrix[i][k])))
+                    cloneMask |= (1ll << adjiacentMatrix[i][k]);
+        }
     for(int i = 1; i <= 49; i++)
         if(cloneMask & (1ll << i))
             {ax.init(0, 0, i, state.getMovingPlayer()); rez.push_back(ax);}
