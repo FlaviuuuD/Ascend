@@ -45,7 +45,8 @@ void precalculateTools()
         for(int j = 0; j < 8; j++)
         {
             newx = xi + toolsDX[j]; newy = yi + toolsDY[j];
-            adjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
+            if(newx >= 1 && newx <= 7 && newy >= 1 && newy <= 7)
+                adjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
         }
     }
     for(int i = 1; i <= 49; i++)
@@ -54,7 +55,8 @@ void precalculateTools()
         for(int j = 0; j < 16; j++)
         {
             newx = xi + toolsJumpDX[j]; newy = yi + toolsJumpDY[j];
-            jumpAdjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
+            if(newx >= 1 && newx <= 7 && newy >= 1 && newy <= 7)
+                jumpAdjiacentMatrix[i][j] = ((newx - 1) * 7 + newy);
         }
     }
 }

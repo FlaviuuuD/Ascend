@@ -61,6 +61,7 @@ void board::readFromInput()
     std::cin >> milisec[0]>> milisec[1];
     remainingTime = (milisec[player] / 100.0);
     remainingTime = std::min(remainingTime, TIME_LIMIT);
+    initializeNumberOfTokens();
     initializeKeys();
 }
 char board::getMovingPlayer()

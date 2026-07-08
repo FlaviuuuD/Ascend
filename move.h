@@ -5,6 +5,6 @@ struct move{
     char destination; //pozitia destinatiei (la care se face clonarea sau la care se sare).
     char player; //1 = eu, 0 = adversarul.
 public:
-    void init(char mv, char tk, char dt);
+    void init(char mv, char tk, char dt, char play);
     void print();
 };

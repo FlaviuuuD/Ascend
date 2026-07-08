@@ -9,7 +9,7 @@ move myMove;
 int main()
 {
     getInitialTime();
-    precalculateTools;
+    precalculateTools();
     gameState.readFromInput();
     myMove = getMove(gameState);
     myMove.print();

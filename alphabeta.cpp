@@ -43,6 +43,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         {
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
+            state = original;
             if(!stillHaveTime())
                 {outOfTime = 1; return -INF;}
             if(auxVariable > value)
@@ -50,7 +51,6 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
                 value = auxVariable;
                 positionOfBestFoundMove = ind;
             }
-            state = original;
             if(value >= beta)
                 {TTEntryType = 2; break;}
             alpha = std::max(alpha, value);
@@ -63,6 +63,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         {
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
+            state = original;
             if(!stillHaveTime())
                 {outOfTime = 1; return -INF;}
             if(auxVariable < value)
@@ -70,7 +71,6 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
                 value = auxVariable;
                 positionOfBestFoundMove = ind;
             }
-            state = original;
             if(value <= alpha)
                 {TTEntryType = 1; break;}
             beta = std::min(beta, value);
@@ -84,7 +84,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
 move getMove(board& state)
 {
     //folosim Iterative Deepening.
-    int depth = 1;
+    int depth = 0;
     while(stillHaveTime() && !outOfTime)
     {
         ++depth;

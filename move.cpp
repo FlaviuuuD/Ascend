@@ -1,6 +1,6 @@
 #include "move.h"
 #include <iostream>
-void move::init(char mv, char tk, char dt) {moveType = mv; tokenPosition = tk; destination = dt;}
+void move::init(char mv, char tk, char dt, char play) {moveType = mv; tokenPosition = tk; destination = dt; player = play;}
 void move::print()
 {
     if(moveType == 0)
