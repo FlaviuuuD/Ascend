@@ -33,12 +33,9 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         return evaluate(state, originalDepth - depth);
     std::vector<move> generatedMoves = generateMoves(state);
     if(killerMove)
-    {
-        generatedMoves.push_back(firstMove);
-        std::swap(generatedMoves[generatedMoves.size() - 1], generatedMoves[0]);
-    }
-    if(!((stillHaveTime())))
-        {return -INF;}
+        for(int ind = 0; ind < (int) generatedMoves.size(); ind++)
+            if(generatedMoves[ind].tokenPosition == firstMove.tokenPosition && generatedMoves[ind].destination == firstMove.destination)
+                {std::swap(generatedMoves[0], generatedMoves[ind]); break;}
     board original = state;
     int originalAlpha = alpha, originalBeta = beta;
     if(generatedMoves.empty())
@@ -107,14 +104,23 @@ move getMove(board& state)
     //folosim Iterative Deepening.
     int depth = 0;
     move lastMove;
+    int win_loss;
+    TTEntry axentry;
     while(stillHaveTime())
     {
         ++depth;
         originalDepth = depth;
         alphaBeta(state, depth, -INF, +INF, 1);
         if(stillHaveTime())
-            lastMove = getTTEntry(state.key[0]).bestMove;
+        {
+            axentry = getTTEntry(state.key[0]);
+            lastMove = axentry.bestMove;
+        }
     }
     std::cerr << "kibitz" << " " << depth << '\n';
+    if(axentry.score >= INF)
+        std::cerr << "kibitz" << " " << "Detected WIN" << '\n';
+    if(axentry.score <= -INF)
+        std::cerr << "kibitz" << " " << "Detected LOSS" << '\n';
     return lastMove;
 }
