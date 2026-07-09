@@ -7,22 +7,17 @@ std::vector<move> generateMoves(board& state)
     std::vector<move> rez;
     unsigned long long cloneMask = 0;
     move ax;
-    for(int i = 1; i <= 49; i++)
+    unsigned long long m;
+    unsigned long long playerMask = ((state.getMovingPlayer() == 1 ? state.mask[1] : (~state.mask[1])) & (state.mask[0]));
+    for(m = playerMask; m >= 1; m -= (m&(-m)))
+        cloneMask |= (adjiacentMask[(63 - __builtin_clzll((m&(-m))))] & (~state.mask[0]));
+    for(unsigned long long m = cloneMask; m >= 1; m -= (m&(-m)))
+        {ax.init(0, 0, (63 - __builtin_clzll((m&(-m)))), state.getMovingPlayer()); rez.push_back(ax);}
+    for(m = playerMask; m >= 1; m -= (m&(-m)))
     {
-        if((state.mask[0] & (1ll << i)) && (((state.mask[1] & (1ll << i)) != 0) == state.getMovingPlayer()))
-            for(int k = 0; k < 8; k++)
-                if((adjiacentMatrix[i][k] >= 1 && adjiacentMatrix[i][k] <= 49) && !(state.mask[0] & (1ll << adjiacentMatrix[i][k])))
-                    cloneMask |= (1ll << adjiacentMatrix[i][k]);
-        }
-    for(int i = 1; i <= 49; i++)
-        if(cloneMask & (1ll << i))
-            {ax.init(0, 0, i, state.getMovingPlayer()); rez.push_back(ax);}
-    for(int i = 1; i <= 49; i++)
-    {
-        if((state.mask[0] & (1ll << i)) && (((state.mask[1] & (1ll << i)) != 0) == state.getMovingPlayer()))
-            for(int k = 0; k < 16; k++)
-                if((jumpAdjiacentMatrix[i][k] >= 1 && jumpAdjiacentMatrix[i][k] <= 49) && !(state.mask[0] & (1ll << jumpAdjiacentMatrix[i][k])))
-                    {ax.init(1, i, jumpAdjiacentMatrix[i][k], state.getMovingPlayer()); rez.push_back(ax);}
+        cloneMask = (adjiacentJumpMask[(63 - __builtin_clzll(m&(-m)))] & (~state.mask[0]));
+        for(playerMask = cloneMask; playerMask >= 1; playerMask -= (playerMask&(-playerMask)))
+            {ax.init(1, (63 - __builtin_clzll(m&(-m))), (63 - __builtin_clzll(playerMask&(-playerMask))), state.getMovingPlayer()); rez.push_back(ax);}
     }
     return rez;
 }
