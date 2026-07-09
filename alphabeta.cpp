@@ -6,12 +6,11 @@
 #include "transpositionTable.h"
 #include "moveGenerator.h"
 #include <vector>
-bool outOfTime = 0;
-const int depthLimit = 7;
-int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlayer)
+const int depthLimit = 6;
+int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
-    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
-        {outOfTime = 1; return -INF;}
+    if(!((stillHaveTime())))
+        {return -INF;}
     move firstMove;
     bool killerMove = 0;
     if(doesEntryExist(state.key[0], state.key[1]))
@@ -30,19 +29,26 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
         firstMove = auxEntry.bestMove;
     }
     if(depth == 0 || state.isTerminal())
-        return evaluate(state);
+        return evaluate(state, depth);
     std::vector<move> generatedMoves = generateMoves(state);
     if(killerMove)
     {
         generatedMoves.push_back(firstMove);
-        std::swap(generatedMoves.back(), generatedMoves[0]);
+        std::swap(generatedMoves[generatedMoves.size() - 1], generatedMoves[0]);
     }
-    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
-        {outOfTime = 1; return -INF;}
-    if(generatedMoves.empty())
-        return evaluate(state);
-    int value;
+    if(!((stillHaveTime())))
+        {return -INF;}
     board original = state;
+    int originalAlpha = alpha, originalBeta = beta;
+    if(generatedMoves.empty())
+    {
+        int total = state.numberOfTokens[0] + state.numberOfTokens[1];
+        state.numberOfTokens[1 - state.getMovingPlayer()] += 49 - total;
+        int val = evaluate(state, depth);
+        state = original;
+        return val;
+    }
+    int value;
     char TTEntryType = 0;
     int positionOfBestFoundMove = 0;
     int auxVariable;
@@ -54,8 +60,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
             state = original;
-            if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
-                {outOfTime = 1; return -INF;}
+            if(!((stillHaveTime())))
+                {return -INF;}
             if(auxVariable > value)
             {
                 value = auxVariable;
@@ -65,6 +71,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
                 {TTEntryType = 2; break;}
             alpha = std::max(alpha, value);
         }
+        if(value <= originalAlpha)
+            TTEntryType = 1;
     }
     else
     {
@@ -74,8 +82,8 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
             state.applyMove(generatedMoves[ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
             state = original;
-            if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
-                {outOfTime = 1; return -INF;}
+            if(!(stillHaveTime()))
+                {return -INF;}
             if(auxVariable < value)
             {
                 value = auxVariable;
@@ -85,9 +93,11 @@ int alphaBeta(board& state, int depth, int alpha, int beta, bool maximizingPlaye
                 {TTEntryType = 1; break;}
             beta = std::min(beta, value);
         }
+        if(value >= originalBeta)
+            TTEntryType = 2;
     }
-    if(!((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit)))
-        {outOfTime = 1; return -INF;}
+    if(!(stillHaveTime()))
+        {return -INF;}
     addTTEntry(state, generatedMoves[positionOfBestFoundMove], value, depth, TTEntryType);
     return value;
 }
@@ -96,11 +106,11 @@ move getMove(board& state)
     //folosim Iterative Deepening.
     int depth = 0;
     move lastMove;
-    while((stillHaveTime() && !outOfTime) || (outOfTime && stillHaveHardTime() && depth < depthLimit))
+    while(stillHaveTime())
     {
         ++depth;
         alphaBeta(state, depth, -INF, +INF, 1);
-        if(stillHaveTime() && !outOfTime)
+        if(stillHaveTime())
             lastMove = getTTEntry(state.key[0]).bestMove;
     }
     std::cerr << "kibitz" << " " << depth << '\n';

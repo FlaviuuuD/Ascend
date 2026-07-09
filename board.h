@@ -14,5 +14,6 @@ struct board{
     char getMovingPlayer();
     char checkValidMove(move& mv);
     void applyMove(move& mv);
+    void changeActivePlayer();
     bool isTerminal();
 };

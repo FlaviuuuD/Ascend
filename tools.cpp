@@ -70,7 +70,3 @@ void precalculateTools()
                 captureMask[i] |= adjiacentMask[j];
     }
 }
-bool stillHaveHardTime()
-{
-    return (getTimeInSeconds() < originalRemainingTime);
-}

@@ -39,12 +39,13 @@ void board::readFromInput()
     char token;
     char player; std::cin >> player;
     player -= '0';
+    int emptyCells = 0;
     for(int i = 1; i <= 7; i++)
     {
         for(int j = 1; j <= 7; j++)
         {
             std::cin >> token;
-            if(token == '.') {} //neocupat, nu facem nimic.
+            if(token == '.') {emptyCells++;} //neocupat, nu facem nimic.
             else
             {
                 //pozitia este ocupata.
@@ -58,9 +59,9 @@ void board::readFromInput()
     mask[0] |= (1ll << 50);
     int milisec[2];
     std::cin >> milisec[0]>> milisec[1];
-    remainingTime = (milisec[player] / 100.0);
-    originalRemainingTime = 0.5 * remainingTime;
-    remainingTime = std::min(0.5 * remainingTime, TIME_LIMIT);
+    remainingTime = (milisec[player] / 1000.0);
+    double estimatedRoundCount = 1.4 * (emptyCells);
+    remainingTime = remainingTime / estimatedRoundCount; 
     initializeNumberOfTokens();
     initializeKeys();
 }
@@ -107,6 +108,7 @@ void board::applyMove(move& mv)
         mask[0] |= (1ll << mv.destination);
         if(mv.player == 1)
         {
+            mask[1] ^= (1ll << mv.tokenPosition);
             mask[1] |= (1ll << mv.destination);
             key[0] ^= randomValues[0][mv.destination][1];
             key[1] ^= randomValues[1][mv.destination][1];
@@ -136,6 +138,14 @@ void board::applyMove(move& mv)
                 }
     }
     //schimbam si jucatorul la mutare.
+    key[0] ^= randomValues[0][50][0];
+    key[0] ^= randomValues[0][50][1];
+    key[1] ^= randomValues[1][50][0];
+    key[1] ^= randomValues[1][50][1];
+    mask[0] ^= (1ll << 50);
+}
+void board::changeActivePlayer()
+{
     key[0] ^= randomValues[0][50][0];
     key[0] ^= randomValues[0][50][1];
     key[1] ^= randomValues[1][50][0];
