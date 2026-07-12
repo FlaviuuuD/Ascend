@@ -18,4 +18,3 @@ void precalculateTools();
 void getInitialTime();
 double getTimeInSeconds();
 bool stillHaveTime();
-bool stillHaveHardTime();

@@ -10,11 +10,10 @@ int evaluate(board& state, int numberOfMoves)
         return (INF + (50 - numberOfMoves));
     if(state.numberOfTokens[0] + state.numberOfTokens[1] == 49)
         return ((state.numberOfTokens[1] > state.numberOfTokens[0] ? (INF + (50 - numberOfMoves)) : (-INF - (50 - numberOfMoves))));
-    int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * (80); 
-    int tokensInDanger = 0;
+    int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * ((state.numberOfTokens[1] + state.numberOfTokens[0]) * 3); 
     int positioning = 0;
     unsigned long long ourMask = (state.mask[1]);
-    unsigned long long enemyMask = (state.mask[0] & (~(state.mask[1]))) ^ (1ll << 50);
+    unsigned long long enemyMask = (state.mask[0] & (~(state.mask[1]))) & (~(1ll << 50));
     unsigned long long m;
     int expansion = 0;
     unsigned long long cloneMask = 0, jumpMask = 0;
@@ -44,10 +43,10 @@ int evaluate(board& state, int numberOfMoves)
         positioning -= (3 - (std::min({(axlog / 7 - (axlog % 7 == 0) + 1) - 1, 7 - (axlog / 7 - (axlog % 7 == 0) + 1), (axlog % 7 == 0 ? 7 : axlog % 7) - 1, 7 - (axlog % 7 == 0 ? 7 : axlog % 7)}))) * 
         ((state.numberOfTokens[0] + state.numberOfTokens[1]) < 10 ? -8 : 15);
     }
-    expansion -= 20 * (__builtin_popcountll(cloneMask));
+    expansion -= 25 * (__builtin_popcountll(cloneMask));
     mobility -= 15 * (__builtin_popcountll(jumpMask));
-    danger = danger * (-70);
-    danger += danger2 * (50);
+    danger = danger * (-60);
+    danger += danger2 * (60);
     //std::cerr << tokenDifference << " " << tokensInDanger << " " << positioning << " " << expansion << " " << mobility << " " << danger << '\n';
-    return (tokenDifference + tokensInDanger + positioning + expansion + mobility + danger);
+    return (tokenDifference + positioning + expansion + mobility + danger);
 }

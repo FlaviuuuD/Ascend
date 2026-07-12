@@ -31,14 +31,14 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     if(depth == 0 || state.isTerminal())
         return evaluate(state, originalDepth - depth);
-    std::vector<move> generatedMoves = generateMoves(state);
+    generateMoves(depth, state);
     if(killerMove)
-        for(int ind = 0; ind < (int) generatedMoves.size(); ind++)
-            if(generatedMoves[ind].tokenPosition == firstMove.tokenPosition && generatedMoves[ind].destination == firstMove.destination)
-                {std::swap(generatedMoves[0], generatedMoves[ind]); break;}
+        for(int ind = 0; ind < (int) movesSize[depth]; ind++)
+            if(moves[depth][ind].tokenPosition == firstMove.tokenPosition && moves[depth][ind].destination == firstMove.destination)
+                {std::swap(moves[depth][0], moves[depth][ind]); break;}
     board original = state;
     int originalAlpha = alpha, originalBeta = beta;
-    if(generatedMoves.empty())
+    if(movesSize[depth] == 0)
     {
         int total = state.numberOfTokens[0] + state.numberOfTokens[1];
         state.numberOfTokens[1 - state.getMovingPlayer()] += 49 - total;
@@ -53,9 +53,9 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     if(maximizingPlayer)
     {
         value = -INF;
-        for(int ind = 0; ind < (int) (generatedMoves.size()); ind++)
+        for(int ind = 0; ind < (int) (movesSize[depth]); ind++)
         {
-            state.applyMove(generatedMoves[ind]);
+            state.applyMove(moves[depth][ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
             state = original;
             if(!((stillHaveTime())))
@@ -75,9 +75,9 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     else
     {
         value = INF;
-        for(int ind = 0; ind < (int) (generatedMoves.size()); ind++)
+        for(int ind = 0; ind < (int) movesSize[depth]; ind++)
         {
-            state.applyMove(generatedMoves[ind]);
+            state.applyMove(moves[depth][ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
             state = original;
             if(!(stillHaveTime()))
@@ -96,7 +96,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     if(!(stillHaveTime()))
         {return -INF;}
-    addTTEntry(state, generatedMoves[positionOfBestFoundMove], value, depth, TTEntryType);
+    addTTEntry(state, moves[depth][positionOfBestFoundMove], value, depth, TTEntryType);
     return value;
 }
 move getMove(board& state)
@@ -106,7 +106,7 @@ move getMove(board& state)
     move lastMove;
     int win_loss;
     TTEntry axentry;
-    while(stillHaveTime())
+    while(stillHaveTime() && depth < 14)
     {
         ++depth;
         originalDepth = depth;
