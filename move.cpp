@@ -1,4 +1,5 @@
 #include "move.h"
+#include "tools.h"
 #include <iostream>
 void move::init(char mv, char tk, char dt, char play) {moveType = mv; tokenPosition = tk; destination = dt; player = play;}
 void move::print()

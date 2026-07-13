@@ -6,12 +6,16 @@
 #include "transpositionTable.h"
 #include "moveGenerator.h"
 #include <vector>
+const int ROUND_CHECK = 1024;
 const int depthLimit = 6;
 int originalDepth;
+bool outOfTime = 0;
+int visitedNodes = 0;
 int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
-    if(!((stillHaveTime())))
-        {return -INF;}
+    visitedNodes++;
+    if((!(visitedNodes & (ROUND_CHECK - 1))) && !((stillHaveTime())))
+        {outOfTime = 1; return (-INF);}
     move firstMove;
     bool killerMove = 0;
     if(doesEntryExist(state.key[0], state.key[1]))
@@ -58,7 +62,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             state.applyMove(moves[depth][ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
             state = original;
-            if(!((stillHaveTime())))
+            if(outOfTime)
                 {return -INF;}
             if(auxVariable > value)
             {
@@ -80,7 +84,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             state.applyMove(moves[depth][ind]);
             auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
             state = original;
-            if(!(stillHaveTime()))
+            if(outOfTime)
                 {return -INF;}
             if(auxVariable < value)
             {
@@ -94,7 +98,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         if(value >= originalBeta)
             TTEntryType = 2;
     }
-    if(!(stillHaveTime()))
+    if(outOfTime)
         {return -INF;}
     addTTEntry(state, moves[depth][positionOfBestFoundMove], value, depth, TTEntryType);
     return value;
@@ -110,8 +114,9 @@ move getMove(board& state)
     {
         ++depth;
         originalDepth = depth;
-        alphaBeta(state, depth, -INF, +INF, 1);
-        if(stillHaveTime())
+        visitedNodes = 0;
+        alphaBeta(state, depth, -2 * INF, +2 * INF, 1);
+        if(stillHaveTime() && !outOfTime)
         {
             axentry = getTTEntry(state.key[0]);
             lastMove = axentry.bestMove;

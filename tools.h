@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC target("popcnt")
 #include <iostream>
 #include <chrono>
 extern double originalRemainingTime;

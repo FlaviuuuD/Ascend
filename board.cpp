@@ -70,6 +70,7 @@ char board::getMovingPlayer()
     //returnam 1 daca mutam noi, 0 daca inamicul.
     return ((mask[0] >> 50) & 1);
 }
+unsigned long long capturedMask, axlog;
 void board::applyMove(move& mv)
 {
     if(mv.moveType == 0)
@@ -121,21 +122,17 @@ void board::applyMove(move& mv)
                 mask[1] ^= (1ll << mv.destination);
         }
     }
-    char lin = (mv.destination / 7 - (mv.destination % 7 == 0) + 1);
-    char col = (mv.destination % 7 == 0 ? 7 : mv.destination % 7);
-    for(int k = 0; k < 8; k++)
+    capturedMask = (adjiacentMask[mv.destination] & mask[0] & (mv.player == 1 ? (~mask[1]) : (mask[1]))); 
+    for(; capturedMask >= 1; capturedMask -= (capturedMask & (-capturedMask)))
     {
-        if(adjiacentMatrix[mv.destination][k] >= 1 && adjiacentMatrix[mv.destination][k] <= 49 && 
-            (mask[0] & (1ll << adjiacentMatrix[mv.destination][k])) && (((mask[1] & (1ll << adjiacentMatrix[mv.destination][k])) != 0) != mv.player))
-                {
-                    mask[1] ^= (1ll << adjiacentMatrix[mv.destination][k]); 
-                    numberOfTokens[mv.player]++; 
-                    numberOfTokens[mv.player ^ 1]--;
-                    key[0] ^= randomValues[0][adjiacentMatrix[mv.destination][k]][mv.player + 1];
-                    key[1] ^= randomValues[1][adjiacentMatrix[mv.destination][k]][mv.player + 1];
-                    key[0] ^= randomValues[0][adjiacentMatrix[mv.destination][k]][(1 - mv.player) + 1];
-                    key[1] ^= randomValues[1][adjiacentMatrix[mv.destination][k]][(1 - mv.player) + 1];
-                }
+        axlog =  (63 - __builtin_clzll(capturedMask&(-capturedMask)));
+        mask[1] ^= (1ll << axlog); 
+        numberOfTokens[mv.player]++; 
+        numberOfTokens[mv.player ^ 1]--;
+        key[0] ^= randomValues[0][axlog][mv.player + 1];
+        key[1] ^= randomValues[1][axlog][mv.player + 1];
+        key[0] ^= randomValues[0][axlog][(1 - mv.player) + 1];
+        key[1] ^= randomValues[1][axlog][(1 - mv.player) + 1];
     }
     //schimbam si jucatorul la mutare.
     key[0] ^= randomValues[0][50][0];

@@ -1,6 +1,7 @@
 #include "transpositionTable.h"
 #include "board.h"
 #include "move.h"
+#include "tools.h"
 #include <iostream>
 TTEntry TT[TTSize];
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
