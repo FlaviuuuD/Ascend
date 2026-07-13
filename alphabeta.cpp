@@ -7,10 +7,10 @@
 #include "moveGenerator.h"
 #include <vector>
 const int ROUND_CHECK = 1024;
-const int depthLimit = 6;
 int originalDepth;
 bool outOfTime = 0;
 int visitedNodes = 0;
+board buff[15][4];
 int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
     visitedNodes++;
@@ -18,9 +18,9 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         {outOfTime = 1; return (-INF);}
     move firstMove;
     bool killerMove = 0;
-    if(doesEntryExist(state.key[0], state.key[1]))
+    TTEntry auxEntry = getTTEntry(state);
+    if(auxEntry.type != -100) //exista entry.
     {
-        TTEntry auxEntry = getTTEntry(state.key[0]);
         if(auxEntry.depth >= depth)
         {
             if(auxEntry.type == 0)
@@ -37,7 +37,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         return evaluate(state, originalDepth - depth);
     generateMoves(depth, state);
     if(killerMove)
-        for(int ind = 0; ind < (int) movesSize[depth]; ind++)
+        for(int ind = 0; ind < movesSize[depth]; ind++)
             if(moves[depth][ind].tokenPosition == firstMove.tokenPosition && moves[depth][ind].destination == firstMove.destination)
                 {std::swap(moves[depth][0], moves[depth][ind]); break;}
     board original = state;
@@ -54,14 +54,18 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     char TTEntryType = 0;
     int positionOfBestFoundMove = 0;
     int auxVariable;
+    for(int ind = 0; ind < 4 && ind < movesSize[depth]; ind++)
+    {
+        buff[depth][ind] = state;
+        buff[depth][ind].applyMove(moves[depth][ind]);
+        __builtin_prefetch(&TT[buff[depth][ind].key[0] & (TTSize - 1)]);
+    }
     if(maximizingPlayer)
     {
         value = -INF;
-        for(int ind = 0; ind < (int) (movesSize[depth]); ind++)
+        for(int ind = 0; ind < (movesSize[depth]); ind++)
         {
-            state.applyMove(moves[depth][ind]);
-            auxVariable = alphaBeta(state, depth - 1, alpha, beta, 0);
-            state = original;
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable > value)
@@ -72,6 +76,12 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(value >= beta)
                 {TTEntryType = 2; break;}
             alpha = std::max(alpha, value);
+            if(ind + 4 < (movesSize[depth]))
+            {
+                buff[depth][ind % 4] = state;
+                buff[depth][ind % 4].applyMove(moves[depth][ind + 4]);
+                __builtin_prefetch(&TT[buff[depth][ind % 4].key[0] & (TTSize - 1)]);
+            }
         }
         if(value <= originalAlpha)
             TTEntryType = 1;
@@ -79,11 +89,9 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     else
     {
         value = INF;
-        for(int ind = 0; ind < (int) movesSize[depth]; ind++)
+        for(int ind = 0; ind < movesSize[depth]; ind++)
         {
-            state.applyMove(moves[depth][ind]);
-            auxVariable = alphaBeta(state, depth - 1, alpha, beta, 1);
-            state = original;
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable < value)
@@ -94,6 +102,12 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(value <= alpha)
                 {TTEntryType = 1; break;}
             beta = std::min(beta, value);
+            if(ind + 4 < (movesSize[depth]))
+            {
+                buff[depth][ind % 4] = state;
+                buff[depth][ind % 4].applyMove(moves[depth][ind + 4]);
+                __builtin_prefetch(&TT[buff[depth][ind % 4].key[0] & (TTSize - 1)]);
+            }
         }
         if(value >= originalBeta)
             TTEntryType = 2;
@@ -105,24 +119,28 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
 }
 move getMove(board& state)
 {
+    declareNullEntry();
     //folosim Iterative Deepening.
     int depth = 0;
     move lastMove;
     int win_loss;
     TTEntry axentry;
+    int totalNodes = 0;
     while(stillHaveTime() && depth < 14)
     {
         ++depth;
         originalDepth = depth;
         visitedNodes = 0;
         alphaBeta(state, depth, -2 * INF, +2 * INF, 1);
+        totalNodes += visitedNodes;
         if(stillHaveTime() && !outOfTime)
         {
-            axentry = getTTEntry(state.key[0]);
+            axentry = getTTEntry(state);
             lastMove = axentry.bestMove;
         }
     }
     std::cerr << "kibitz" << " " << depth << '\n';
+    std::cerr << "kibitz" << " " << (int) (((1.0 * visitedNodes) / (remainingTime))) << " " << "Nodes / Second" << '\n';
     if(axentry.score >= INF)
         std::cerr << "kibitz" << " " << "Detected WIN" << '\n';
     if(axentry.score <= -INF)

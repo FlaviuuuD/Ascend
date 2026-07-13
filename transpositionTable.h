@@ -7,8 +7,10 @@ struct TTEntry{
     move bestMove;
     int score;
     int depth;
-    char type; //tipul: daca mutarea este exacta, avem 0. daca este <= scor, atunci avem 1. daca este >= scor, atunci avem 2. 
+    char type;
+    //tipul: daca mutarea este exacta, avem 0. daca este <= scor, atunci avem 1. daca este >= scor, atunci avem 2. 
 };
+extern TTEntry TT[TTSize];
+void declareNullEntry();
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp);
-bool doesEntryExist(unsigned long long& key0, unsigned long long& key1);
-TTEntry getTTEntry(unsigned long long& key0);
+TTEntry getTTEntry(board& state);
