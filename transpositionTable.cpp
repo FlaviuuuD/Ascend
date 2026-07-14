@@ -11,7 +11,6 @@ void declareNullEntry()
 }
 void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
 {
-    TTEntry auxx = getTTEntry(brd);
     if((!TT[brd.key[0] & (TTSize - 1)].key[0]) || TT[brd.key[0] & (TTSize - 1)].depth < stateDepth)
     {
         TT[brd.key[0] & (TTSize - 1)].key[0] = brd.key[0];

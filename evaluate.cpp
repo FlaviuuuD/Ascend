@@ -7,7 +7,7 @@ const int POSITIONING_PLUS = 15;
 const int EXPANSION = 25;
 const int MOBILITY = 15;
 const int DANGER = 60;
-const int CONSTTOKENS = 3;
+const int CONSTTOKENS = 20;
 int evaluate(board& state)
 {
     if(state.numberOfTokens[1] == 0)
@@ -16,7 +16,7 @@ int evaluate(board& state)
         return (INF + (1000));
     if(state.numberOfTokens[0] + state.numberOfTokens[1] == 49)
         return ((state.numberOfTokens[1] > state.numberOfTokens[0] ? (INF + (state.numberOfTokens[1] - state.numberOfTokens[0])) : (-INF - (state.numberOfTokens[0] - state.numberOfTokens[1]))));
-    return (state.numberOfTokens[1] - state.numberOfTokens[0]);
+    return (((state.numberOfTokens[1] - state.numberOfTokens[0]) *  CONSTTOKENS) + state.positionScore); 
     /*int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * ((state.numberOfTokens[1] + state.numberOfTokens[0]) * CONSTTOKENS); 
     int positioning = 0;
     unsigned long long ourMask = (state.mask[1]);

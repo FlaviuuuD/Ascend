@@ -40,10 +40,10 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         for(int ind = 0; ind < movesSize[depth]; ind++)
             if(moves[depth][ind].tokenPosition == firstMove.tokenPosition && moves[depth][ind].destination == firstMove.destination)
                 {std::swap(moves[depth][0], moves[depth][ind]); break;}
-    board original = state;
-    int originalAlpha = alpha, originalBeta = beta;
+                int originalAlpha = alpha, originalBeta = beta;
     if(movesSize[depth] == 0)
     {
+        board original = state;
         int total = state.numberOfTokens[0] + state.numberOfTokens[1];
         state.numberOfTokens[1 - state.getMovingPlayer()] += 49 - total;
         int val = evaluate(state);

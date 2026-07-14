@@ -8,11 +8,11 @@ struct board{
     //De asemenea, in prima masca, pe pozitia 50, ne vom tine ce jucator este la mutare (1 = suntem noi, 0 = este adversarul).
     unsigned long long key[2] = {0, 0};
     char numberOfTokens[2] = {0, 0};
+    short int positionScore = 0;
+    void initializeTableScores();
     void readFromInput();
     void initializeKeys();
-    void initializeNumberOfTokens();
     char getMovingPlayer();
-    char checkValidMove(move& mv);
     void applyMove(move& mv);
     void changeActivePlayer();
     bool isTerminal();

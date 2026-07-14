@@ -2,6 +2,15 @@
 #include "move.h"
 #include "tools.h"
 #include <iostream>
+const int positionMatrix[50] = {0,
+    30, 15, 12, 10, 12, 15, 30,
+    15, 8, 5, 5, 5, 8, 15,
+    12, 2, 5, 5, 5, 2, 12,
+    10, 2, 5, 4, 5, 2, 10,
+    12, 2, 5, 5, 5, 2, 12,
+    15, 8, 2, 2, 2, 2, 15,
+    30, 15, 12, 10, 12, 15, 30
+};
 void board::initializeKeys()
 {
     for(int i = 1; i <= 49; i++)
@@ -28,11 +37,14 @@ void board::initializeKeys()
     key[0] ^= randomValues[0][50][1];
     key[1] ^= randomValues[1][50][1];
 }
-void board::initializeNumberOfTokens()
+void board::initializeTableScores()
 {
     for(int i = 1; i <= 49; i++)
         if(mask[0] & (1ll << i))
             numberOfTokens[(mask[1] & (1ll << i)) != 0]++;
+    for(int i = 1; i <= 49; i++)
+        if(mask[0] & (1ll << i))
+            positionScore += positionMatrix[i] * ((mask[1] & (1ll << i)) ? 1 : -1);
 }
 void board::readFromInput()
 {
@@ -62,7 +74,7 @@ void board::readFromInput()
     remainingTime = (milisec[player] / 1000.0);
     double estimatedRoundCount = 1.4 * (emptyCells);
     remainingTime = remainingTime / estimatedRoundCount; 
-    initializeNumberOfTokens();
+    initializeTableScores();
     initializeKeys();
 }
 char board::getMovingPlayer()
@@ -80,6 +92,7 @@ void board::applyMove(move& mv)
         key[1] ^= randomValues[1][mv.destination][0];
         if(mv.player == 1)
         {
+            positionScore += (positionMatrix[mv.destination]);
             mask[0] |= (1ll << mv.destination);
             mask[1] |= (1ll << mv.destination);
             key[0] ^= randomValues[0][mv.destination][1];
@@ -87,6 +100,7 @@ void board::applyMove(move& mv)
         }
         else
         {
+            positionScore -= (positionMatrix[mv.destination]);
             mask[0] |= (1ll << mv.destination);
             key[0] ^= randomValues[0][mv.destination][2];
             key[1] ^= randomValues[1][mv.destination][2];
@@ -109,6 +123,8 @@ void board::applyMove(move& mv)
         mask[0] |= (1ll << mv.destination);
         if(mv.player == 1)
         {
+            positionScore -= (positionMatrix[mv.tokenPosition]);
+            positionScore += (positionMatrix[mv.destination]);
             mask[1] ^= (1ll << mv.tokenPosition);
             mask[1] |= (1ll << mv.destination);
             key[0] ^= randomValues[0][mv.destination][1];
@@ -116,6 +132,8 @@ void board::applyMove(move& mv)
         }
         else
         {
+            positionScore += (positionMatrix[mv.tokenPosition]);
+            positionScore -= (positionMatrix[mv.destination]);
             key[0] ^= randomValues[0][mv.destination][2];
             key[1] ^= randomValues[1][mv.destination][2];
             if(mask[1] & (1ll << mv.destination))
@@ -126,7 +144,8 @@ void board::applyMove(move& mv)
     for(; capturedMask >= 1; capturedMask -= (capturedMask & (-capturedMask)))
     {
         axlog =  (63 - __builtin_clzll(capturedMask&(-capturedMask)));
-        mask[1] ^= (1ll << axlog); 
+        mask[1] ^= (1ll << axlog);
+        positionScore += (mv.player == 1 ? 2 : -2) * positionMatrix[axlog];
         numberOfTokens[mv.player]++; 
         numberOfTokens[mv.player ^ 1]--;
         key[0] ^= randomValues[0][axlog][mv.player + 1];
