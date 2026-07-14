@@ -34,7 +34,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         firstMove = auxEntry.bestMove;
     }
     if(depth == 0 || state.isTerminal())
-        return evaluate(state, originalDepth - depth);
+        return evaluate(state);
     generateMoves(depth, state);
     if(killerMove)
         for(int ind = 0; ind < movesSize[depth]; ind++)
@@ -46,7 +46,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     {
         int total = state.numberOfTokens[0] + state.numberOfTokens[1];
         state.numberOfTokens[1 - state.getMovingPlayer()] += 49 - total;
-        int val = evaluate(state, originalDepth - depth);
+        int val = evaluate(state);
         state = original;
         return val;
     }

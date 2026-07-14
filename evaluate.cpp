@@ -6,16 +6,18 @@ const int POSITIONING_MINUS = -8;
 const int POSITIONING_PLUS = 15;
 const int EXPANSION = 25;
 const int MOBILITY = 15;
-const int DANGER = 60; //de la 0 la 100
-int evaluate(board& state, int numberOfMoves)
+const int DANGER = 60;
+const int CONSTTOKENS = 3;
+int evaluate(board& state)
 {
     if(state.numberOfTokens[1] == 0)
-        return (-INF - (50 - numberOfMoves));
+        return (-INF - (1000));
     if(state.numberOfTokens[0] == 0)
-        return (INF + (50 - numberOfMoves));
+        return (INF + (1000));
     if(state.numberOfTokens[0] + state.numberOfTokens[1] == 49)
         return ((state.numberOfTokens[1] > state.numberOfTokens[0] ? (INF + (state.numberOfTokens[1] - state.numberOfTokens[0])) : (-INF - (state.numberOfTokens[0] - state.numberOfTokens[1]))));
-    int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * ((state.numberOfTokens[1] + state.numberOfTokens[0]) * 3); 
+    return (state.numberOfTokens[1] - state.numberOfTokens[0]);
+    /*int tokenDifference = (state.numberOfTokens[1] - state.numberOfTokens[0]) * ((state.numberOfTokens[1] + state.numberOfTokens[0]) * CONSTTOKENS); 
     int positioning = 0;
     unsigned long long ourMask = (state.mask[1]);
     unsigned long long enemyMask = (state.mask[0] & (~(state.mask[1]))) & (~(1ll << 50));
@@ -53,5 +55,5 @@ int evaluate(board& state, int numberOfMoves)
     danger = danger * (-DANGER);
     danger += danger2 * (DANGER);
     //std::cerr << tokenDifference << " " << tokensInDanger << " " << positioning << " " << expansion << " " << mobility << " " << danger << '\n';
-    return (tokenDifference + positioning + expansion + mobility + danger);
+    return (tokenDifference + positioning + expansion + mobility + danger);*/
 }
