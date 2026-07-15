@@ -51,7 +51,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     {
         board original = state;
         int total = state.numberOfTokens[0] + state.numberOfTokens[1];
-        state.numberOfTokens[1 - state.getMovingPlayer()] += 49 - total;
+        state.numberOfTokens[1 - ((state.mask[0] >> 50) & 1)] += 49 - total;
         int val = evaluate(state);
         state = original;
         return val;

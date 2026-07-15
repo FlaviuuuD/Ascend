@@ -12,7 +12,6 @@ struct board{
     void initializeTableScores();
     void readFromInput();
     void initializeKeys();
-    char getMovingPlayer();
     void applyMove(move& mv);
     void changeActivePlayer();
     bool isTerminal();

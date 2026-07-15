@@ -77,11 +77,6 @@ void board::readFromInput()
     initializeTableScores();
     initializeKeys();
 }
-char board::getMovingPlayer()
-{
-    //returnam 1 daca mutam noi, 0 daca inamicul.
-    return ((mask[0] >> 50) & 1);
-}
 unsigned long long capturedMask, axlog;
 void board::applyMove(move& mv)
 {
