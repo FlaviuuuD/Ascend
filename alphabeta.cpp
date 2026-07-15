@@ -7,6 +7,8 @@
 #include "moveGenerator.h"
 #include <vector>
 const int ROUND_CHECK = 1024;
+const int LMRNUMBEROFMOVES = 50;
+const int LMRSCAD = 1;
 int originalDepth;
 bool outOfTime = 0;
 int visitedNodes = 0;
@@ -71,7 +73,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = -INF;
         for(int ind = 0; ind < (movesSize[depth]); ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - (ind > LMRNUMBEROFMOVES ? LMRSCAD : 1), alpha, beta, 0);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable > value)
@@ -97,7 +99,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = INF;
         for(int ind = 0; ind < movesSize[depth]; ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - (ind > LMRNUMBEROFMOVES ? LMRSCAD : 1), alpha, beta, 1);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable < value)
