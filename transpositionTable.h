@@ -1,7 +1,7 @@
 #pragma once
 #include "move.h"
 #include "board.h"
-const int TTSize = (1 << 27);
+const int TTSize = (1 << 24);
 struct TTEntry{
     unsigned long long key[2];
     unsigned char bestMove;

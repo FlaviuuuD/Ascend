@@ -1,0 +1,9 @@
+### Start Wed Jul 15 12:20:41 2026
+# /usr/bin/gprofng-archive -n -a on --outfile /home/flaviu/Documents/Ascend/test.2.er/archive.log /home/flaviu/Documents/Ascend/test.2.er
+Copying `/home/flaviu/Documents/Ascend/main'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/main_OgSw8GbZiN3'
+Copying `/usr/lib/libc.so.6'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/libc.so.6_UXwQ5Zq997d'
+Copying `/usr/lib/libm.so.6'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/libm.so.6_UXwQ5Zq997d'
+Copying `/usr/lib/libstdc++.so.6.0.35'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/libstdc++.so.6.0.35_UXwQ5Zq997d'
+Copying `/usr/lib/libgcc_s.so.1'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/libgcc_s.so.1_UXwQ5Zq997d'
+Copying `/usr/lib/gprofng/libgp-collector.so'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/libgp-collector.so_DQwl9QBFgKc'
+Copying `/usr/lib/ld-linux-x86-64.so.2'  to `/home/flaviu/Documents/Ascend/test.2.er/archives/ld-linux-x86-64.so.2_UXwQ5Zq997d'
