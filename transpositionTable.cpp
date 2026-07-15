@@ -9,7 +9,7 @@ void declareNullEntry()
 {
     nullEntry.type = -100;
 }
-void addTTEntry(board& brd, move& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
+void addTTEntry(board& brd, unsigned char& bestFoundMove, int& maxScore, int& stateDepth, char& tp)
 {
     if((!TT[brd.key[0] & (TTSize - 1)].key[0]) || TT[brd.key[0] & (TTSize - 1)].depth < stateDepth)
     {

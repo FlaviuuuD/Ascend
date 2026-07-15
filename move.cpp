@@ -1,7 +1,7 @@
 #include "move.h"
 #include "tools.h"
 #include <iostream>
-void move::init(char mv, char tk, char dt, char play) {moveType = mv; tokenPosition = tk; destination = dt; player = play;}
+void move::init(char mv, char tk, char dt, char play, char scor) {moveType = mv; tokenPosition = tk; destination = dt; player = play; score = scor;}
 void move::print()
 {
     if(moveType == 0)

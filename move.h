@@ -4,7 +4,8 @@ struct move{
     char tokenPosition; //pozitia tokenului ce va fi mutat / clonat (de la 1 la 49)
     char destination; //pozitia destinatiei (la care se face clonarea sau la care se sare).
     char player; //1 = eu, 0 = adversarul.
+    unsigned char score;
 public:
-    void init(char mv, char tk, char dt, char play);
+    void init(char mv, char tk, char dt, char play, char scor);
     void print();
 };

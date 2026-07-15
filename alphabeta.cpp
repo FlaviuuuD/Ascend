@@ -11,12 +11,13 @@ int originalDepth;
 bool outOfTime = 0;
 int visitedNodes = 0;
 board buff[15][4];
+int order[15][500];
 int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
     visitedNodes++;
     if((!(visitedNodes & (ROUND_CHECK - 1))) && !((stillHaveTime())))
         {outOfTime = 1; return (-INF);}
-    move firstMove;
+    unsigned char firstMove;
     bool killerMove = 0;
     TTEntry auxEntry = getTTEntry(state);
     if(auxEntry.type != -100) //exista entry.
@@ -37,10 +38,15 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         return evaluate(state);
     generateMoves(depth, state);
     if(killerMove)
-        for(int ind = 0; ind < movesSize[depth]; ind++)
-            if(moves[depth][ind].tokenPosition == firstMove.tokenPosition && moves[depth][ind].destination == firstMove.destination)
-                {std::swap(moves[depth][0], moves[depth][ind]); break;}
-                int originalAlpha = alpha, originalBeta = beta;
+        moves[depth][firstMove].score = 10;
+    int cnt[12] = {0}, already[12] = {0};
+    for(int i = 0; i < movesSize[depth]; i++)
+        cnt[moves[depth][i].score]++;
+    for(int i = 10; i >= 0; i--)
+        cnt[i] += cnt[i + 1];
+    for(int i = 0; i < movesSize[depth]; i++)
+        order[depth][cnt[moves[depth][i].score + 1] + (already[moves[depth][i].score]++)] = i;
+    int originalAlpha = alpha, originalBeta = beta;
     if(movesSize[depth] == 0)
     {
         board original = state;
@@ -52,12 +58,12 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     int value;
     char TTEntryType = 0;
-    int positionOfBestFoundMove = 0;
+    unsigned char positionOfBestFoundMove = 0;
     int auxVariable;
     for(int ind = 0; ind < 4 && ind < movesSize[depth]; ind++)
     {
         buff[depth][ind] = state;
-        buff[depth][ind].applyMove(moves[depth][ind]);
+        buff[depth][ind].applyMove(moves[depth][order[depth][ind]]);
         __builtin_prefetch(&TT[buff[depth][ind].key[0] & (TTSize - 1)]);
     }
     if(maximizingPlayer)
@@ -71,7 +77,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(auxVariable > value)
             {
                 value = auxVariable;
-                positionOfBestFoundMove = ind;
+                positionOfBestFoundMove = order[depth][ind];
             }
             if(value >= beta)
                 {TTEntryType = 2; break;}
@@ -79,7 +85,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(ind + 4 < (movesSize[depth]))
             {
                 buff[depth][ind % 4] = state;
-                buff[depth][ind % 4].applyMove(moves[depth][ind + 4]);
+                buff[depth][ind % 4].applyMove(moves[depth][order[depth][ind + 4]]);
                 __builtin_prefetch(&TT[buff[depth][ind % 4].key[0] & (TTSize - 1)]);
             }
         }
@@ -97,7 +103,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(auxVariable < value)
             {
                 value = auxVariable;
-                positionOfBestFoundMove = ind;
+                positionOfBestFoundMove = order[depth][ind];
             }
             if(value <= alpha)
                 {TTEntryType = 1; break;}
@@ -105,7 +111,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
             if(ind + 4 < (movesSize[depth]))
             {
                 buff[depth][ind % 4] = state;
-                buff[depth][ind % 4].applyMove(moves[depth][ind + 4]);
+                buff[depth][ind % 4].applyMove(moves[depth][order[depth][ind + 4]]);
                 __builtin_prefetch(&TT[buff[depth][ind % 4].key[0] & (TTSize - 1)]);
             }
         }
@@ -114,7 +120,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     if(outOfTime)
         {return -INF;}
-    addTTEntry(state, moves[depth][positionOfBestFoundMove], value, depth, TTEntryType);
+    addTTEntry(state, positionOfBestFoundMove, value, depth, TTEntryType);
     return value;
 }
 move getMove(board& state)
@@ -136,7 +142,7 @@ move getMove(board& state)
         if(stillHaveTime() && !outOfTime)
         {
             axentry = getTTEntry(state);
-            lastMove = axentry.bestMove;
+            lastMove = moves[depth][axentry.bestMove];
         }
     }
     std::cerr << "kibitz" << " " << depth << '\n';
