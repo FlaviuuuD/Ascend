@@ -7,7 +7,7 @@ const int POSITIONING_PLUS = 15;
 const int EXPANSION = 25;
 const int MOBILITY = 15;
 const int DANGER = 60;
-const int CONSTTOKENS = 15;
+const int CONSTTOKENS = 25;
 int evaluate(board& state)
 {
     if(state.numberOfTokens[1] == 0)

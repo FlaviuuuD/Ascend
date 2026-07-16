@@ -48,8 +48,8 @@ void board::initializeTableScores()
 }
 void board::readFromInput()
 {
-    char token;
-    char player; std::cin >> player;
+    unsigned char token;
+    unsigned char player; std::cin >> player;
     player -= '0';
     int emptyCells = 0;
     for(int i = 1; i <= 7; i++)

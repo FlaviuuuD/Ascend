@@ -6,14 +6,13 @@
 #include "transpositionTable.h"
 #include "moveGenerator.h"
 #include <vector>
+#include <algorithm>
 const int ROUND_CHECK = 1024;
-const int LMRNUMBEROFMOVES = 50;
-const int LMRSCAD = 1;
 int originalDepth;
 bool outOfTime = 0;
 int visitedNodes = 0;
-board buff[15][4];
-int order[15][500];
+board buff[51][4];
+int order[51][500];
 int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
     visitedNodes++;
@@ -36,7 +35,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         killerMove = 1;
         firstMove = auxEntry.bestMove;
     }
-    if(depth == 0 || state.isTerminal())
+    if(depth <= 0 || state.isTerminal())
         return evaluate(state);
     generateMoves(depth, state);
     if(killerMove)
@@ -73,7 +72,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = -INF;
         for(int ind = 0; ind < (movesSize[depth]); ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - (ind > LMRNUMBEROFMOVES ? LMRSCAD : 1), alpha, beta, 0);
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable > value)
@@ -99,7 +98,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = INF;
         for(int ind = 0; ind < movesSize[depth]; ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - (ind > LMRNUMBEROFMOVES ? LMRSCAD : 1), alpha, beta, 1);
+            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             if(outOfTime)
                 {return -INF;}
             if(auxVariable < value)
@@ -131,10 +130,9 @@ move getMove(board& state)
     //folosim Iterative Deepening.
     int depth = 0;
     move lastMove;
-    int win_loss;
     TTEntry axentry;
     int totalNodes = 0;
-    while(stillHaveTime() && depth < 14)
+    while(stillHaveTime() && depth < 50)
     {
         ++depth;
         originalDepth = depth;
@@ -148,7 +146,7 @@ move getMove(board& state)
         }
     }
     std::cerr << "kibitz" << " " << depth << '\n';
-    std::cerr << "kibitz" << " " << (int) (((1.0 * visitedNodes) / (remainingTime))) << " " << "Nodes / Second" << '\n';
+    std::cerr << "kibitz" << " " << (int) (((1.0 * totalNodes) / (remainingTime))) << " " << "Nodes / Second" << '\n';
     if(axentry.score >= INF)
         std::cerr << "kibitz" << " " << "Detected WIN" << '\n';
     if(axentry.score <= -INF)

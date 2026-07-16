@@ -3,8 +3,8 @@
 #include "moveGenerator.h"
 #include "tools.h"
 #include <vector>
-move moves[15][MAXMOVES + 5];
-int movesSize[15];
+move moves[51][MAXMOVES + 5];
+int movesSize[51];
 void generateMoves(int& depth, board& state)
 {
     unsigned long long cloneMask = 0;
