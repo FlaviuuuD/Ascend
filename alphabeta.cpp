@@ -139,7 +139,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
                 auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             else
             {
-                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, beta - 1, beta, 1);
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, alpha + 1, 1);
                 if(auxVariable > alpha && auxVariable < beta)
                     auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             }
