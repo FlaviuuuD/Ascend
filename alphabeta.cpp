@@ -12,6 +12,7 @@ int originalDepth;
 bool outOfTime = 0;
 int visitedNodes = 0;
 board buff[51][4];
+unsigned char killerMoves[51][2][2];
 int order[51][500];
 int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlayer)
 {
@@ -37,13 +38,31 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     if(depth <= 0 || state.isTerminal())
         return evaluate(state);
+    if(depth >= 5 && !outOfTime && beta > alpha + 1 && (state.numberOfTokens[0] + state.numberOfTokens[1] < 40))
+    {
+        board nullState = state;
+        nullState.changeActivePlayer();
+        int nullScore = alphaBeta(nullState, depth - 1 - 2, alpha, beta, maximizingPlayer ^ 1);
+        if(maximizingPlayer && nullScore >= beta)
+            return nullScore;
+        if(!maximizingPlayer && nullScore <= alpha)
+            return nullScore;
+    }
     generateMoves(depth, state);
     if(killerMove)
-        moves[depth][firstMove].score = 10;
-    int cnt[12] = {0}, already[12] = {0};
+        moves[depth][firstMove].score = 12;
+    for(int i = 0; i < movesSize[depth]; i++)
+    {
+        if(moves[depth][i].score == 12) continue;
+        if(moves[depth][i].tokenPosition == killerMoves[depth][0][0] && moves[depth][i].destination == killerMoves[depth][0][1])
+            moves[depth][i].score = 11;
+        else if(moves[depth][i].tokenPosition == killerMoves[depth][1][0] && moves[depth][i].destination == killerMoves[depth][1][1])
+            moves[depth][i].score = 10;
+    }
+    int cnt[14] = {0}, already[14] = {0};
     for(int i = 0; i < movesSize[depth]; i++)
         cnt[moves[depth][i].score]++;
-    for(int i = 10; i >= 0; i--)
+    for(int i = 12; i >= 0; i--)
         cnt[i] += cnt[i + 1];
     for(int i = 0; i < movesSize[depth]; i++)
         order[depth][cnt[moves[depth][i].score + 1] + (already[moves[depth][i].score]++)] = i;
@@ -72,7 +91,14 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = -INF;
         for(int ind = 0; ind < (movesSize[depth]); ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
+            if(ind == 0)
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
+            else
+            {
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, alpha + 1, 0);
+                if(auxVariable > alpha && auxVariable < beta)
+                    auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
+            }
             if(outOfTime)
                 {return -INF;}
             if(auxVariable > value)
@@ -81,7 +107,18 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
                 positionOfBestFoundMove = order[depth][ind];
             }
             if(value >= beta)
-                {TTEntryType = 2; break;}
+            {
+                TTEntryType = 2; 
+                if(moves[depth][order[depth][ind]].tokenPosition != killerMoves[depth][0][0] || 
+                    moves[depth][order[depth][ind]].destination != killerMoves[depth][0][1])
+                {
+                    killerMoves[depth][1][0] = killerMoves[depth][0][0];
+                    killerMoves[depth][1][1] = killerMoves[depth][0][1];
+                    killerMoves[depth][0][0] = moves[depth][order[depth][ind]].tokenPosition;
+                    killerMoves[depth][0][1] = moves[depth][order[depth][ind]].destination;
+                }                
+                break;
+            }
             alpha = std::max(alpha, value);
             if(ind + 4 < (movesSize[depth]))
             {
@@ -98,7 +135,14 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
         value = INF;
         for(int ind = 0; ind < movesSize[depth]; ind++)
         {
-            auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
+            if(ind == 0)
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
+            else
+            {
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, beta - 1, beta, 1);
+                if(auxVariable > alpha && auxVariable < beta)
+                    auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
+            }
             if(outOfTime)
                 {return -INF;}
             if(auxVariable < value)
@@ -107,7 +151,18 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
                 positionOfBestFoundMove = order[depth][ind];
             }
             if(value <= alpha)
-                {TTEntryType = 1; break;}
+            {
+                TTEntryType = 1;
+                if(moves[depth][order[depth][ind]].tokenPosition != killerMoves[depth][0][0] || 
+                    moves[depth][order[depth][ind]].destination != killerMoves[depth][0][1])
+                {
+                    killerMoves[depth][1][0] = killerMoves[depth][0][0];
+                    killerMoves[depth][1][1] = killerMoves[depth][0][1];
+                    killerMoves[depth][0][0] = moves[depth][order[depth][ind]].tokenPosition;
+                    killerMoves[depth][0][1] = moves[depth][order[depth][ind]].destination;
+                }  
+                break;
+            }
             beta = std::min(beta, value);
             if(ind + 4 < (movesSize[depth]))
             {
