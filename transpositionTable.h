@@ -5,7 +5,7 @@ const int TTSize = (1 << 24);
 struct TTEntry{
     unsigned long long key[2];
     unsigned char bestMove;
-    short int score;
+    int score;
     unsigned char depth;
     unsigned char type;
     //tipul: daca mutarea este exacta, avem 0. daca este <= scor, atunci avem 1. daca este >= scor, atunci avem 2. 
