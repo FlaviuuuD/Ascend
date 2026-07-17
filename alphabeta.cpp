@@ -38,11 +38,15 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
     }
     if(depth <= 0 || state.isTerminal())
         return evaluate(state);
-    if(depth >= 5 && !outOfTime && beta > alpha + 1 && (state.numberOfTokens[0] + state.numberOfTokens[1] < 40))
+    if(depth >= 5 && !outOfTime && (state.numberOfTokens[0] + state.numberOfTokens[1] < 40))
     {
         board nullState = state;
         nullState.changeActivePlayer();
-        int nullScore = alphaBeta(nullState, depth - 1 - 2, alpha, beta, maximizingPlayer ^ 1);
+        int nullScore;
+        if(maximizingPlayer)
+            nullScore = alphaBeta(nullState, depth - 1 - 2, beta - 1, beta, maximizingPlayer ^ 1);
+        else
+            nullScore = alphaBeta(nullState, depth - 1 - 2, alpha, alpha + 1, maximizingPlayer ^ 1);
         if(maximizingPlayer && nullScore >= beta)
             return nullScore;
         if(!maximizingPlayer && nullScore <= alpha)
@@ -95,7 +99,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
                 auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
             else
             {
-                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, beta - 1, beta, 0);
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, alpha + 1, 0);
                 if(auxVariable > alpha && auxVariable < beta)
                     auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 0);
             }
@@ -139,7 +143,7 @@ int alphaBeta(board& state, int depth, int alpha, int beta, char maximizingPlaye
                 auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             else
             {
-                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, alpha + 1, 1);
+                auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, beta - 1, beta, 1);
                 if(auxVariable > alpha && auxVariable < beta)
                     auxVariable = alphaBeta(buff[depth][ind % 4], depth - 1, alpha, beta, 1);
             }
